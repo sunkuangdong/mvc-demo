@@ -11288,44 +11288,74 @@ return jQuery;
 },{"process":"../node_modules/process/browser.js"}],"app1.js":[function(require,module,exports) {
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
 require("./app1.css");
 
 var _jquery = _interopRequireDefault(require("jquery"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var html = "\n    <section id=\"app1\">\n        <div class=\"output\">\n            <span id=\"number\">100</span>\n        </div>\n        <div class=\"actions\">\n            <button id=\"add1\">+1</button>\n            <button id=\"minus1\">-1</button>\n            <button id=\"mul2\">*2</button>\n            <button id=\"divide2\">\xF72</button>\n        </div>\n    </section>\n";
-var $element = (0, _jquery.default)(html).appendTo((0, _jquery.default)('body>.page'));
-var $button1 = (0, _jquery.default)("#add1");
-var $button2 = (0, _jquery.default)("#minus1");
-var $button3 = (0, _jquery.default)("#mul2");
-var $button4 = (0, _jquery.default)("#divide2");
-var $number = (0, _jquery.default)("#number");
-$number.text(localStorage.getItem("n") || 100);
-$button1.on("click", function () {
-  var n = parseInt($number.text());
-  n += 1;
-  localStorage.setItem("n", n);
-  $number.text(n);
-});
-$button2.on("click", function () {
-  var n = parseInt($number.text());
-  n -= 1;
-  localStorage.setItem("n", n);
-  $number.text(n);
-});
-$button3.on("click", function () {
-  var n = parseInt($number.text());
-  n *= 2;
-  localStorage.setItem("n", n);
-  $number.text(n);
-});
-$button4.on("click", function () {
-  var n = parseInt($number.text());
-  n /= 2;
-  localStorage.setItem("n", n);
-  $number.text(n);
-});
+// 数据相关都放到m
+var Module = {
+  n: Number(localStorage.getItem("n"))
+}; // 视图相关都放到v
+
+var View = {
+  el: null,
+  html: "\n    <div>\n        <div class=\"output\">\n            <span id=\"number\">{{n}}</span>\n        </div>\n        <div class=\"actions\">\n            <button id=\"add1\">+1</button>\n            <button id=\"minus1\">-1</button>\n            <button id=\"mul2\">*2</button>\n            <button id=\"divide2\">\xF72</button>\n        </div>\n    </div>\n    ",
+  init: function init(container) {
+    View.container = (0, _jquery.default)(container);
+    View.render(container);
+  },
+  render: function render(container) {
+    if (!View.el) {
+      View.el = (0, _jquery.default)(View.html.replace("{{n}}", Module.n)).appendTo((0, _jquery.default)(container));
+    } else {
+      var newEl = (0, _jquery.default)(View.html.replace("{{n}}", Module.n));
+      View.el.replaceWith(newEl);
+      View.el = newEl;
+      localStorage.setItem("n", Module.n);
+    }
+  }
+}; // 其他都在c
+
+var Content = {
+  init: function init(container) {
+    View.init(container);
+    Content.ui = {
+      button1: (0, _jquery.default)("#add1"),
+      button2: (0, _jquery.default)("#minus1"),
+      button3: (0, _jquery.default)("#mul2"),
+      button4: (0, _jquery.default)("#divide2"),
+      number: (0, _jquery.default)("#number")
+    };
+    Content.bindEvents();
+  },
+  bindEvents: function bindEvents() {
+    View.container.on("click", "#add1", function () {
+      Module.n += 1;
+      View.render();
+    });
+    View.container.on("click", "#minus1", function () {
+      Module.n -= 1;
+      View.render();
+    });
+    View.container.on("click", "#mul2", function () {
+      Module.n *= 2;
+      View.render();
+    });
+    View.container.on("click", "#divide2", function () {
+      Module.n /= 2;
+      View.render();
+    });
+  }
+};
+var _default = Content;
+exports.default = _default;
 },{"./app1.css":"app1.css","jquery":"../node_modules/jquery/dist/jquery.js"}],"app2.css":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
@@ -11410,13 +11440,17 @@ require("./reset.css");
 
 require("./global.css");
 
-require("./app1.js");
+var _app = _interopRequireDefault(require("./app1.js"));
 
 require("./app2.js");
 
 require("./app3.js");
 
 require("./app4.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_app.default.init("#app1");
 },{"./reset.css":"reset.css","./global.css":"global.css","./app1.js":"app1.js","./app2.js":"app2.js","./app3.js":"app3.js","./app4.js":"app4.js"}],"../node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';

@@ -1,10 +1,18 @@
 import "./app1.css"
 import $ from "jquery"
 
-const html = `
-    <section id="app1">
+
+// 数据相关都放到m
+const Module = {
+    n: Number(localStorage.getItem("n"))
+}
+// 视图相关都放到v
+const View = {
+    el: null,
+    html: `
+    <div>
         <div class="output">
-            <span id="number">100</span>
+            <span id="number">{{n}}</span>
         </div>
         <div class="actions">
             <button id="add1">+1</button>
@@ -12,39 +20,54 @@ const html = `
             <button id="mul2">*2</button>
             <button id="divide2">÷2</button>
         </div>
-    </section>
-`
+    </div>
+    `,
+    init(container) {
+        View.container = $(container)
+        View.render(container)
+    },
+    render(container) {
+        if (!View.el) {
+            View.el = $(View.html.replace("{{n}}", Module.n)).appendTo($(container))
+        } else {
+            const newEl = $(View.html.replace("{{n}}", Module.n))
+            View.el.replaceWith(newEl)
+            View.el = newEl
+            localStorage.setItem("n", Module.n);
+        }
+    },
+}
+// 其他都在c
+const Content = {
+    init(container) {
+        View.init(container)
+        Content.ui = {
+            button1: $("#add1"),
+            button2: $("#minus1"),
+            button3: $("#mul2"),
+            button4: $("#divide2"),
+            number: $("#number"),
+        }
+        Content.bindEvents()
+    },
+    bindEvents() {
+        View.container.on("click", "#add1", () => {
+            Module.n += 1
+            View.render()
+        });
+        View.container.on("click", "#minus1", () => {
+            Module.n -= 1
+            View.render()
+        });
+        View.container.on("click", "#mul2", () => {
+            Module.n *= 2
+            View.render()
+        });
+        View.container.on("click", "#divide2", () => {
+            Module.n /= 2
+            View.render()
+        });
+    }
+}
 
-const $element = $(html).appendTo($('body>.page'))
-
-
-const $button1 = $("#add1");
-const $button2 = $("#minus1");
-const $button3 = $("#mul2");
-const $button4 = $("#divide2");
-const $number = $("#number");
-$number.text(localStorage.getItem("n") || 100);
-$button1.on("click", () => {
-    let n = parseInt($number.text());
-    n += 1;
-    localStorage.setItem("n", n);
-    $number.text(n);
-});
-$button2.on("click", () => {
-    let n = parseInt($number.text());
-    n -= 1;
-    localStorage.setItem("n", n);
-    $number.text(n);
-});
-$button3.on("click", () => {
-    let n = parseInt($number.text());
-    n *= 2;
-    localStorage.setItem("n", n);
-    $number.text(n);
-});
-$button4.on("click", () => {
-    let n = parseInt($number.text());
-    n /= 2;
-    localStorage.setItem("n", n);
-    $number.text(n);
-});
+export default Content;
