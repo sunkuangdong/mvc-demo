@@ -11299,59 +11299,74 @@ var _jquery = _interopRequireDefault(require("jquery"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// 数据相关都放到m
+var eventBus = (0, _jquery.default)(window); // 数据相关都放到m
+
 var Module = {
-  n: Number(localStorage.getItem("n"))
+  n: Number(localStorage.getItem("n")),
+  updated: function updated(data) {
+    Object.assign(Module, data);
+    eventBus.trigger("m:updata");
+  }
 }; // 视图相关都放到v
 
 var View = {
   el: null,
   html: "\n    <div>\n        <div class=\"output\">\n            <span id=\"number\">{{n}}</span>\n        </div>\n        <div class=\"actions\">\n            <button id=\"add1\">+1</button>\n            <button id=\"minus1\">-1</button>\n            <button id=\"mul2\">*2</button>\n            <button id=\"divide2\">\xF72</button>\n        </div>\n    </div>\n    ",
-  init: function init(container) {
-    View.container = (0, _jquery.default)(container);
-    View.render(container);
+  init: function init(el) {
+    View.el = (0, _jquery.default)(el);
   },
-  render: function render(container) {
-    if (!View.el) {
-      View.el = (0, _jquery.default)(View.html.replace("{{n}}", Module.n)).appendTo((0, _jquery.default)(container));
-    } else {
-      var newEl = (0, _jquery.default)(View.html.replace("{{n}}", Module.n));
-      View.el.replaceWith(newEl);
-      View.el = newEl;
-      localStorage.setItem("n", Module.n);
+  render: function render(n) {
+    if (!!View.el.children.length) {
+      View.el.empty();
     }
+
+    (0, _jquery.default)(View.html.replace("{{n}}", n)).appendTo((0, _jquery.default)(View.el));
+    localStorage.setItem("n", n);
   }
 }; // 其他都在c
 
 var Content = {
-  init: function init(container) {
-    View.init(container);
-    Content.ui = {
-      button1: (0, _jquery.default)("#add1"),
-      button2: (0, _jquery.default)("#minus1"),
-      button3: (0, _jquery.default)("#mul2"),
-      button4: (0, _jquery.default)("#divide2"),
-      number: (0, _jquery.default)("#number")
-    };
+  init: function init(el) {
+    View.init(el);
+    View.render(Module.n);
     Content.bindEvents();
+    eventBus.on("m:updata", function () {
+      View.render(Module.n);
+    });
+  },
+  events: {
+    "click #add1": "add",
+    "click #minus1": "minus1",
+    "click #mul2": "mul2",
+    "click #divide2": "divide2"
+  },
+  add: function add() {
+    Module.updated({
+      n: Module.n + 1
+    });
+  },
+  minus1: function minus1() {
+    Module.updated({
+      n: Module.n - 1
+    });
+  },
+  mul2: function mul2() {
+    Module.updated({
+      n: Module.n * 2
+    });
+  },
+  divide2: function divide2() {
+    Module.updated({
+      n: Module.n / 2
+    });
   },
   bindEvents: function bindEvents() {
-    View.container.on("click", "#add1", function () {
-      Module.n += 1;
-      View.render();
-    });
-    View.container.on("click", "#minus1", function () {
-      Module.n -= 1;
-      View.render();
-    });
-    View.container.on("click", "#mul2", function () {
-      Module.n *= 2;
-      View.render();
-    });
-    View.container.on("click", "#divide2", function () {
-      Module.n /= 2;
-      View.render();
-    });
+    for (var key in Content.events) {
+      var spaceIndex = key.indexOf(" ");
+      var part1 = key.slice(0, spaceIndex);
+      var part2 = key.slice(spaceIndex + 1);
+      View.el.on(part1, part2, Content[Content.events[key]]);
+    }
   }
 };
 var _default = Content;

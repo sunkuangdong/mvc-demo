@@ -1,10 +1,14 @@
 import "./app1.css"
 import $ from "jquery"
 
-
+const eventBus = $(window)
 // 数据相关都放到m
 const Module = {
-    n: Number(localStorage.getItem("n"))
+    n: Number(localStorage.getItem("n")),
+    updated(data) {
+        Object.assign(Module, data)
+        eventBus.trigger("m:updata")
+    },
 }
 // 视图相关都放到v
 const View = {
@@ -22,51 +26,60 @@ const View = {
         </div>
     </div>
     `,
-    init(container) {
-        View.container = $(container)
-        View.render(container)
+    init(el) {
+        View.el = $(el)
     },
-    render(container) {
-        if (!View.el) {
-            View.el = $(View.html.replace("{{n}}", Module.n)).appendTo($(container))
-        } else {
-            const newEl = $(View.html.replace("{{n}}", Module.n))
-            View.el.replaceWith(newEl)
-            View.el = newEl
-            localStorage.setItem("n", Module.n);
+    render(n) {
+        if (!!View.el.children.length) {
+            View.el.empty()
         }
+        $(View.html.replace("{{n}}", n)).appendTo($(View.el))
+        localStorage.setItem("n", n)
     },
 }
 // 其他都在c
 const Content = {
-    init(container) {
-        View.init(container)
-        Content.ui = {
-            button1: $("#add1"),
-            button2: $("#minus1"),
-            button3: $("#mul2"),
-            button4: $("#divide2"),
-            number: $("#number"),
-        }
+    init(el) {
+        View.init(el)
+        View.render(Module.n)
         Content.bindEvents()
+        eventBus.on("m:updata", () => {
+            View.render(Module.n)
+        })
+    },
+    events: {
+        "click #add1": "add",
+        "click #minus1": "minus1",
+        "click #mul2": "mul2",
+        "click #divide2": "divide2",
+    },
+    add() {
+        Module.updated({
+            n: Module.n + 1
+        })
+    },
+    minus1() {
+        Module.updated({
+            n: Module.n - 1
+        })
+    },
+    mul2() {
+        Module.updated({
+            n: Module.n * 2
+        })
+    },
+    divide2() {
+        Module.updated({
+            n: Module.n / 2
+        })
     },
     bindEvents() {
-        View.container.on("click", "#add1", () => {
-            Module.n += 1
-            View.render()
-        });
-        View.container.on("click", "#minus1", () => {
-            Module.n -= 1
-            View.render()
-        });
-        View.container.on("click", "#mul2", () => {
-            Module.n *= 2
-            View.render()
-        });
-        View.container.on("click", "#divide2", () => {
-            Module.n /= 2
-            View.render()
-        });
+        for (let key in Content.events) {
+            const spaceIndex = key.indexOf(" ")
+            const part1 = key.slice(0, spaceIndex)
+            const part2 = key.slice(spaceIndex + 1)
+            View.el.on(part1, part2, Content[Content.events[key]]);
+        }
     }
 }
 
