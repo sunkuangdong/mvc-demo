@@ -1,0 +1,13 @@
+{
+  "name": "MVC",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "parcel src/index.html"
+  },
+  "dependencies": {
+    "jquery": "^3.5.1",
+    "parcel": "^1.12.4"
+  }
+}
