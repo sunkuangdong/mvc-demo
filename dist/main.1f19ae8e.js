@@ -11294,6 +11294,8 @@ var _jquery = _interopRequireDefault(require("jquery"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var html = "\n    <section id=\"app1\">\n        <div class=\"output\">\n            <span id=\"number\">100</span>\n        </div>\n        <div class=\"actions\">\n            <button id=\"add1\">+1</button>\n            <button id=\"minus1\">-1</button>\n            <button id=\"mul2\">*2</button>\n            <button id=\"divide2\">\xF72</button>\n        </div>\n    </section>\n";
+var $element = (0, _jquery.default)(html).appendTo((0, _jquery.default)('body>.page'));
 var $button1 = (0, _jquery.default)("#add1");
 var $button2 = (0, _jquery.default)("#minus1");
 var $button3 = (0, _jquery.default)("#mul2");
@@ -11338,6 +11340,8 @@ var _jquery = _interopRequireDefault(require("jquery"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var html = "\n    <section id=\"app2\">\n        <ol class=\"tab-bar\">\n            <li><span>1111</span></li>\n            <li><span>2222</span></li>\n        </ol>\n        <ol class=\"tab-content\">\n            <li>\u5185\u5BB91</li>\n            <li>\u5185\u5BB92</li>\n        </ol>\n    </section>\n";
+var $element = (0, _jquery.default)(html).appendTo((0, _jquery.default)(".page"));
 var $tabBar = (0, _jquery.default)("#app2 .tab-bar");
 var $tabContent = (0, _jquery.default)("#app2 .tab-content");
 var index = localStorage.getItem("app2-index") || 0;
@@ -11363,6 +11367,8 @@ var _jquery = _interopRequireDefault(require("jquery"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var html = "\n    <section id=\"app3\">\n        <div class=\"square\"></div>\n    </section>\n";
+(0, _jquery.default)(html).appendTo((0, _jquery.default)(".page"));
 var $square = (0, _jquery.default)('#app3 .square');
 var active = localStorage.getItem("app3-active") === "yes";
 $square.toggleClass("active", active);
@@ -11389,6 +11395,8 @@ var _jquery = _interopRequireDefault(require("jquery"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var html = "\n    <section id=\"app4\">\n        <div class=\"circle\"></div>\n    </section>\n";
+(0, _jquery.default)(html).appendTo(".page");
 var $circle = (0, _jquery.default)('#app4 .circle');
 $circle.on('mouseenter', function () {
   $circle.addClass('active');
